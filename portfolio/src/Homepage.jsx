@@ -4,9 +4,9 @@ import GitHubLink from "./GitHubLink.jsx";
 import LinkedInLink from "./LinkedInLink.jsx";
 import EmailLink from "./EmailLink.jsx";
 import halfBodyPic from "./assets/half-body-photo.jpg";
+import ContactLink from "./ContactLink.jsx";
 
 export default function Homepage() {
-	const [showEmail, setShowEmail] = useState(false);
 	return (
 		<main className="bg-sky-600 text-white h-screen flex flex-col">
 			<div className="m-14 gap-4 mb-8 justify-center items-center">
@@ -17,6 +17,7 @@ export default function Homepage() {
 						<GitHubLink username="olsenow" className="m-4" />
 						<LinkedInLink username="ow-xun-jiun-92022124a" className="m-4" />
 						<EmailLink email="olsen4263@outlook.com" className="m-4" />
+						<ContactLink contact="+6011-33364263" className="m-4" />
 					</span>
 			</div>
 
@@ -24,9 +25,10 @@ export default function Homepage() {
 				<p className="text-3xl italic text-pretty max-w-3xl text-justify text-shadow-lg/70 text-shadow-600">"I'm an IoT fresh graduate who builds embedded systems with sensors and microcontrollers with a solid understanding of basic software concept and web development knowledge."</p>
 			</div>
 
-			<div className="mt-auto mb-8 mx-14">
-				<img src={halfBodyPic} alt="Ow Xun Jiun" className="w-48 h-auto rounded-lg shadow-lg"/>
+			<div class="relative inline-block mb-8 mx-14 w-[732px] -mt-186 items-right self-end">
+  				<img class="block w-full h-auto mask-b-from-89% mask-b-to-100%" src={halfBodyPic} />
 			</div>
+
 		</main>
 	);
 }
