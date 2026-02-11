@@ -9,7 +9,7 @@ const ContactLink = lazy(() => import("./ContactLink.jsx"));
 const BackgroundBoxes = lazy(() => import("./components/ui/boxes.jsx"));
 const FadeContent = lazy(() => import("./components/FadeContent"));
 const Magnet = lazy(() => import("./components/Magnet"));
-const GlareHover = lazy(() => import("./components/GlareHover.jsx"));
+
 
 export default function Homepage() {
 	return (
@@ -34,15 +34,11 @@ export default function Homepage() {
 						<hr className="ml-16 border-3 border-white w-full max-w-[580px] my-4" />
 						
 						<div className="flex flex-wrap items-center gap-4 my-2 md:my-8 ml-20">
-							<Suspense fallback={<div className="h-10 w-40" />}>
-								<GlareHover>
-									<h2 className="text-gray-400 text-lg sm:text-xl md:text-2xl lg:text-4xl antialiased 
-									text-shadow-lg/70 text-shadow-black-600 font-bold">
-										IoT Developer
-									</h2>
-								</GlareHover>
-							</Suspense>
-							
+							<h2 className="text-gray-400 text-lg sm:text-xl md:text-2xl lg:text-4xl antialiased 
+							text-shadow-lg/70 text-shadow-black-600 font-bold">
+								IoT Developer
+							</h2>
+
 							<Suspense fallback={<div className="flex gap-2 md:gap-4 w-40 h-10" />}>
 								<div className="flex gap-2 md:gap-4 pointer-events-auto">
 									<Magnet padding={15} disabled={false} magnetStrength={15}>
