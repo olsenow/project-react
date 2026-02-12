@@ -6,7 +6,7 @@ const GitHubLink = lazy(() => import("./GitHubLink.jsx"));
 const LinkedInLink = lazy(() => import("./LinkedInLink.jsx"));
 const EmailLink = lazy(() => import("./EmailLink.jsx"));
 const ContactLink = lazy(() => import("./ContactLink.jsx"));
-const BackgroundBoxes = lazy(() => import("./components/ui/boxes.jsx"));
+const BackgroundBoxesCanvas = lazy(() => import("./components/ui/boxes.jsx"));
 const FadeContent = lazy(() => import("./components/FadeContent"));
 const Magnet = lazy(() => import("./components/Magnet"));
 
@@ -15,7 +15,7 @@ export default function Homepage() {
 	return (
 		<>
 			<Suspense fallback={<div className="fixed inset-0 bg-slate-900" />}>
-				<BackgroundBoxes />
+				<BackgroundBoxesCanvas />
 			</Suspense>
 			
 			<main className="text-white min-h-screen flex flex-col px-2 sm:px-4 md:px-6 py-2 md:py-4 pt-2 md:pt-4 lg:pt-6 
@@ -59,15 +59,15 @@ export default function Homepage() {
 						</p>
 					</div>
 
-					<div className="absolute bottom-0 right-0 w-full max-w-[500px] mr-6 mb-25">
+					<div className="absolute bottom-0 right-0 w-full max-w-[650px] mr-6 mb-5">
 						<img 
 							className="block w-full h-auto rounded-full" 
 							src={halfBodyPic}
 							alt="Profile Picture"
 							loading="lazy"
 							style={{
-								maskImage: 'radial-gradient(circle at center, black 50%, transparent 60%)', 
-								WebkitMaskImage: 'radial-gradient(circle at center, black 50%, transparent 60%)'
+								maskImage: 'radial-gradient(circle at center, black 55%, transparent 60%)', 
+								WebkitMaskImage: 'radial-gradient(circle at center, black 55%, transparent 60%)'
 							}}
 						/>
 					</div>
