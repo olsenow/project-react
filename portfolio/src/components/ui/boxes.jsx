@@ -25,9 +25,9 @@ export default function BackgroundBoxesCanvas({
   background = "rgb(15 23 42)", // slate-900
 
   // trail tuning
-  trailMax = 180,
-  fadeSpeed = 0.035, // lower = longer trail
-  spawnAlpha = 0.9,
+  trailMax = 350,
+  fadeSpeed = 0.015, // lower = longer trail
+  spawnAlpha = 1,
 }) {
   const canvasRef = useRef(null);
   const rafRef = useRef(0);
@@ -48,6 +48,9 @@ export default function BackgroundBoxesCanvas({
     // trail items: { row, col, color, alpha }
     trail: [],
     lastKey: "",
+
+    lastPx: null,
+    lastPy: null,
   });
 
   const computeMatrices = () => {
@@ -155,7 +158,7 @@ export default function BackgroundBoxesCanvas({
     const resize = () => {
       const w = window.innerWidth;
       const h = window.innerHeight;
-      const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1)); // cap DPR for stability/perf
+      const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
 
       st.w = w;
       st.h = h;
@@ -167,49 +170,67 @@ export default function BackgroundBoxesCanvas({
       canvas.height = Math.floor(h * dpr);
 
       computeMatrices();
-      ensureAnimating(); // redraw once after resize
+      
+      // Draw immediately after resize to show grid
+      const ctx = canvas.getContext("2d");
+      if (ctx) draw(ctx);
     };
 
     const onPointerMove = (e) => {
-      if (!st.Minv) return;
+  if (!st.Minv) return;
 
-      const rect = canvas.getBoundingClientRect();
-      const xCanvas = e.clientX - rect.left;
-      const yCanvas = e.clientY - rect.top;
+  const rect = canvas.getBoundingClientRect();
+  const xCanvas = e.clientX - rect.left;
+  const yCanvas = e.clientY - rect.top;
 
-      // Convert CANVAS coords -> PLANE coords using inverse matrix
-      const p = new DOMPoint(xCanvas, yCanvas).matrixTransform(st.Minv);
+  const p = new DOMPoint(xCanvas, yCanvas).matrixTransform(st.Minv);
+  if (p.x < 0 || p.y < 0 || p.x >= st.planeW || p.y >= st.planeH) return;
 
-      // outside plane? do nothing
-      if (p.x < 0 || p.y < 0 || p.x >= st.planeW || p.y >= st.planeH) return;
+  // Interpolate along the path so no gaps
+  const last = st.lastPx == null ? p : { x: st.lastPx, y: st.lastPy };
+  st.lastPx = p.x;
+  st.lastPy = p.y;
 
-      const col = Math.floor(p.x / cellW);
-      const row = Math.floor(p.y / cellH);
+  const dx = p.x - last.x;
+  const dy = p.y - last.y;
+  const dist = Math.hypot(dx, dy);
 
-      // avoid spawning duplicates every pixel move
-      const key = `${row},${col}`;
-      if (key === st.lastKey) return;
-      st.lastKey = key;
+  // step about half a cell so the trail looks continuous
+  const step = Math.min(cellW, cellH) * 0.5;
+  const steps = Math.max(1, Math.ceil(dist / step));
 
-      st.trail.push({
-        row,
-        col,
-        color: pickColor(),
-        alpha: spawnAlpha,
-      });
+  for (let s = 0; s <= steps; s++) {
+    const x = last.x + (dx * s) / steps;
+    const y = last.y + (dy * s) / steps;
 
-      if (st.trail.length > trailMax) {
-        st.trail.splice(0, st.trail.length - trailMax);
-      }
+    const col = Math.floor(x / cellW);
+    const row = Math.floor(y / cellH);
 
-      ensureAnimating();
-    };
+    const key = `${row},${col}`;
+    if (key === st.lastKey) continue;
+    st.lastKey = key;
+
+    st.trail.push({
+      row,
+      col,
+      color: pickColor(),
+      alpha: spawnAlpha,
+    });
+  }
+
+  if (st.trail.length > trailMax) {
+    st.trail.splice(0, st.trail.length - trailMax);
+  }
+
+  ensureAnimating();
+};
 
     const onPointerLeave = () => {
-      st.lastKey = "";
-      // keep animating if trail exists (so it fades out)
-      ensureAnimating();
-    };
+  st.lastKey = "";
+  st.lastPx = null;
+  st.lastPy = null;
+  ensureAnimating();
+};
 
     window.addEventListener("resize", resize);
     canvas.addEventListener("pointermove", onPointerMove, { passive: true });
@@ -224,13 +245,13 @@ export default function BackgroundBoxesCanvas({
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       rafRef.current = 0;
     };
-  }, [cellW, cellH, sizeMultiplier, skewXDeg, skewYDeg, scale, trailMax, fadeSpeed, spawnAlpha]);
+  }, [cellW, cellH, sizeMultiplier, skewXDeg, skewYDeg, scale, trailMax, fadeSpeed, spawnAlpha, lineColor, background]);
 
   return (
-    <div className="fixed inset-0 overflow-hidden" style={{ background }}>
+    <div className="fixed inset-0 overflow-hidden z-0" style={{ background }}>
       <canvas ref={canvasRef} style={{ display: "block" }} />
       <div
-        className="pointer-events-none absolute inset-0"
+        className="pointer-events-none absolute inset-0 z-10"
         style={{
           background,
           WebkitMaskImage:
