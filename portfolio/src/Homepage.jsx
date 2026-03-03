@@ -1,33 +1,191 @@
-import React, {useState} from "react";
-import "./index.css";
-import GitHubLink from "./GitHubLink.jsx";
-import LinkedInLink from "./LinkedInLink.jsx";
-import EmailLink from "./EmailLink.jsx";
-import halfBodyPic from "./assets/half-body-photo.jpg";
+	import React, {lazy, Suspense, useState, useEffect, useRef, useCallback} from "react";
+	import "./index.css";
+	import halfBodyPic from "./assets/half-body-photo.webp";
+	import 'animate.css';
+	
 
-export default function Homepage() {
-	const [showEmail, setShowEmail] = useState(false);
-	return (
-		<main className="bg-sky-600 text-white h-screen flex flex-col">
-			<div className="m-14 gap-4 mb-8 justify-center items-center">
-				<h1 className="text-9xl antialiased text-shadow-lg/70 text-shadow-black-600 leading-[1.5] text-left" >Ow Xun Jiun</h1>
-				<hr className="border-2 border-white w-[700px] my-4 " />
-					<span className="flex flex-row items-center gap-3">
-						<h1 className="text-5xl antialiased text-shadow-lg/70 text-shadow-black-600 leading-[3] justify-center text-left m-9 ">IoT Developer</h1>
-						<GitHubLink username="olsenow" className="m-4" />
-						<LinkedInLink username="ow-xun-jiun-92022124a" className="m-4" />
-						<EmailLink email="olsen4263@outlook.com" className="m-4" />
-					</span>
-			</div>
-
-			<div className="flex flex-col m-14 gap-6">
-				<p className="text-3xl italic text-pretty max-w-3xl text-justify text-shadow-lg/70 text-shadow-600">"I'm an IoT fresh graduate who builds embedded systems with sensors and microcontrollers with a solid understanding of basic software concept and web development knowledge."</p>
-			</div>
-
-			<div className="mt-auto mb-8 mx-14">
-				<img src={halfBodyPic} alt="Ow Xun Jiun" className="w-48 h-auto rounded-lg shadow-lg"/>
-			</div>
-		</main>
+	const GitHubLink = lazy(() => import("./GitHubLink.jsx"));
+	const LinkedInLink = lazy(() => import("./LinkedInLink.jsx"));
+	const EmailLink = lazy(() => import("./EmailLink.jsx"));
+	const ContactLink = lazy(() => import("./ContactLink.jsx"));
+	const BackgroundBoxesCanvas = lazy(() => import("./components/ui/boxes.jsx")); 
+	const FadeContent = lazy(() => import("./components/FadeContent"));
+	const Magnet = lazy(() => import("./components/Magnet"));
+	const TextAnimate = lazy(() =>
+	import("./components/ui/text-animate").then((module) => ({
+		default: module.TextAnimate,
+	}))
 	);
-}
+	const Skills = lazy(() => import("./Skills.jsx"));
+	const Projects = lazy(() => import("./Projects.jsx"));
+	const Experience = lazy(() => import("./Experience.jsx"));
 
+	export default function Homepage() {
+		const [showLine, setShowLine] = useState(false);
+		const [showIcons, setShowIcons] = useState(false);
+		const [sectionVisibility, setSectionVisibility] = useState({
+			skills: false,
+			projects: false,
+			experience: false
+		});
+		const stickyMode = sectionVisibility.skills || sectionVisibility.projects || sectionVisibility.experience;
+		const handleSectionVisibility = useCallback((sectionName) => (isVisible) => {
+			setSectionVisibility(prev => ({ ...prev, [sectionName]: isVisible }));
+		}, []);
+		
+		const scrollToMain = () => {
+			const el = document.querySelector("#homepage-main");
+				if (!el) {
+				  console.warn('No element found with id="homepage-main"');
+				return;
+			  }
+			  el.scrollIntoView({ behavior: "smooth", block: "start" });
+			  };
+			
+		useEffect(() => {
+			const timer = setTimeout(() => {
+				setShowLine(true);
+			}, 300); 
+			return () => clearTimeout(timer);
+		}, []);
+
+		useEffect(() => {
+			const t = setTimeout(() => setShowIcons(true), 1000); 
+			return () => clearTimeout(t);
+		}, []);
+
+
+
+
+		return (
+			<>
+				{/* Background with lazy loading */}
+				<Suspense fallback={<div className="fixed inset-0 bg-slate-900 z-0" />}>
+					<BackgroundBoxesCanvas />
+				</Suspense>
+
+				{/* Sticky Mini Header */}
+				<div className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ease-out
+					${stickyMode ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
+					<div className="flex justify-between items-center px-6 sm:px-10 md:px-16 py-4 backdrop-blur-lg bg-slate-900/90 border-b border-white/10">
+						<div className="flex flex-col items-start gap-1">
+							<h1 className="text-xl md:text-3xl text-gray-300 font-semibold pointer-events-auto">
+								Ow Xun Jiun
+							</h1>
+							<h2 className="text-xs md:text-sm text-gray-300 font-semibold ml-4 pointer-events-auto">
+								IoT Developer
+							</h2>
+						</div>
+						<div className="w-14 h-14 md:w-16 md:h-16 flex-shrink-0">
+							<img 
+								className="block w-full h-full rounded-full object-cover" 
+								src={halfBodyPic}
+								alt="Profile Picture"
+								style={{
+									maskImage: 'radial-gradient(circle at center, black 55%, transparent 60%)', 
+									WebkitMaskImage: 'radial-gradient(circle at center, black 55%, transparent 60%)'
+								}}
+							/>
+						</div>
+					</div>
+				</div>
+				
+				<main id="homepage-main" className="text-white relative z-10">
+					{/* Hero Section */}
+					<section className="min-h-screen flex flex-col px-2 sm:px-4 md:px-6 py-2 md:py-4 pt-2 md:pt-4 lg:pt-6 xl:pt-8 pointer-events-none relative">
+						<div className="flex-1">
+							<div className="gap-4 mb-8">
+								<Suspense fallback={<div className="h-20 w-full animate-pulse bg-white/5 rounded" />}>
+									<FadeContent blur={true} duration={2500} easing="ease-out" initialOpacity={0}>
+										<h1 className="text-gray-400 text-2xl sm:text-2xl md:text-4xl lg:text-6xl 
+										xl:text-9xl antialiased text-shadow-lg/70 text-shadow-black-600 leading-tight text-left">
+											Ow Xun Jiun
+										</h1>
+									</FadeContent>
+								</Suspense>
+							
+								<div className="ml-16 w-full max-w-[580px] my-4" id="line">
+									<div className={`line ${showLine ? "show" : ""}`}/>
+								</div>
+							
+								<div className="flex flex-wrap items-center gap-16 my-6 md:my-12 ml-20 ">
+									<h2 className="animate__animated animate__fadeInUp animate__slow text-gray-400 text-lg
+									sm:text-xl md:text-2xl lg:text-4xl antialiased text-shadow-lg/70 text-shadow-black-600 font-bold">
+										IoT Developer
+									</h2>
+								
+									<Suspense fallback={<div className="flex gap-4 w-40 h-12 animate-pulse bg-white/5 rounded" />}>
+										<div className={`pointer-events-auto 
+											${showIcons ? "animate__animated animate__lightSpeedInRight animate__slow" : "opacity-0"}`}>
+											<Magnet padding={15} disabled={false} magnetStrength={15}>
+												<div className="flex gap-6 md:gap-8">
+													<GitHubLink username="olsenow" />
+													<LinkedInLink username="ow-xun-jiun-92022124a" />
+													<EmailLink email="olsen4263@outlook.com" />
+													<ContactLink contact="+6011-33364263" />
+												</div>
+											</Magnet>
+										</div>
+									</Suspense>
+								</div>
+							</div>
+
+							<div className="flex flex-col max-w-[500px] mb-8 mt-16 ml-24">
+								<Suspense fallback={<div className="h-32 animate-pulse bg-white/5 rounded" />}>
+									<TextAnimate
+										by="word"
+										animation="blurInUp"
+										delay={2}
+										once={true}
+										startOnView={true}
+										className="text-gray-400 text-xl sm:text-lg md:text-xl lg:text-2xl 
+										italic text-justify text-shadow-lg/70 text-shadow-600 leading-relaxed"
+									>
+										I'm an IoT fresh graduate who builds embedded systems with sensors and 
+										microcontrollers with a solid understanding of basic software concept and web development knowledge.
+									</TextAnimate>
+								</Suspense>
+							</div>
+						</div>
+
+						<div className="absolute bottom-35 right-35 w-full max-w-[280px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[420px] xl:max-w-[480px]
+						animate__animated animate__backInRight animate__slow animate__delay-1s">
+							<img 
+								className="block w-full h-auto rounded-full" 
+								src={halfBodyPic}
+								alt="Profile Picture"
+								loading="lazy"
+								style={{
+									background: "rgba(15,23,42,0.55)",
+									maskImage: 'radial-gradient(circle at center, black 55%, transparent 60%)', 
+									WebkitMaskImage: 'radial-gradient(circle at center, black 55%, transparent 60%)'
+								}}
+							/>
+						</div>
+					</section>
+
+					{/* Skills Section */}
+					<Suspense fallback={<div className="min-h-screen" />}>
+						<Skills onVisibilityChange={handleSectionVisibility("skills")} />
+					</Suspense>
+
+					<Suspense fallback={<div className="min-h-screen" />}>
+						<Experience onVisibilityChange={handleSectionVisibility("experience")} />
+					</Suspense>
+
+					<Suspense fallback={<div className="min-h-screen" />}>
+						<Projects onVisibilityChange={handleSectionVisibility("projects")} />
+					</Suspense>
+					
+					<div className="flex flex-col items-center justify-center">				
+						<button onClick={scrollToMain} className="border-t border-white/10 mt-2 p-1 text-gray-400 hover:text-white transition-colors duration-300"> Back to Top</button>
+					</div>
+				</main>
+			<footer className="relative z-10 bg-slate-900/90 backdrop-blur-lg border-t border-white/10 py-4 px-4">
+  				<div className="max-w-2xl mx-auto text-center text-gray-400">
+    				<p>© 2026 Designed and Developed by Ow Xun Jiun. Made with ReactJS and Tailwind CSS.</p>
+  				</div>
+			</footer>
+		</>	
+		);
+	}
