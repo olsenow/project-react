@@ -55,7 +55,7 @@ export default function Experience({onVisibilityChange}) {
                                 </svg>
                             </div>
                             <div className="timeline-start mb-10 md:text-end">
-                                <time className="font-mono italic">2024</time>
+                                <time className="font-mono italic p-3">2024</time>
                                 <div className={`transition-all duration-1000 ease-out text-lg font-black justify-right
                                     ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
                                     Internship at MC Crenergy Sdn Bhd
