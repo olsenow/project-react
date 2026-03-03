@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import "animate.css";
+import 'animate.css/source/fading_entrances/fadeInDown.css';
 
 export default function Skills( {onVisibilityChange} ) {
   const sectionRef = useRef(null);

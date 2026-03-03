@@ -1,7 +1,8 @@
-	import React, {lazy, Suspense, useState, useEffect, useRef} from "react";
+	import React, {lazy, Suspense, useState, useEffect, useRef, useCallback} from "react";
 	import "./index.css";
 	import halfBodyPic from "./assets/half-body-photo.webp";
 	import 'animate.css';
+	
 
 	const GitHubLink = lazy(() => import("./GitHubLink.jsx"));
 	const LinkedInLink = lazy(() => import("./LinkedInLink.jsx"));
@@ -17,13 +18,30 @@
 	);
 	const Skills = lazy(() => import("./Skills.jsx"));
 	const Projects = lazy(() => import("./Projects.jsx"));
+	const Experience = lazy(() => import("./Experience.jsx"));
 
 	export default function Homepage() {
 		const [showLine, setShowLine] = useState(false);
 		const [showIcons, setShowIcons] = useState(false);
-		const [stickyMode, setStickyMode] = useState(false);
-		const triggerRef = useRef(null);
-
+		const [sectionVisibility, setSectionVisibility] = useState({
+			skills: false,
+			projects: false,
+			experience: false
+		});
+		const stickyMode = sectionVisibility.skills || sectionVisibility.projects || sectionVisibility.experience;
+		const handleSectionVisibility = useCallback((sectionName) => (isVisible) => {
+			setSectionVisibility(prev => ({ ...prev, [sectionName]: isVisible }));
+		}, []);
+		
+		const scrollToMain = () => {
+			const el = document.querySelector("#homepage-main");
+				if (!el) {
+				  console.warn('No element found with id="homepage-main"');
+				return;
+			  }
+			  el.scrollIntoView({ behavior: "smooth", block: "start" });
+			  };
+			
 		useEffect(() => {
 			const timer = setTimeout(() => {
 				setShowLine(true);
@@ -50,9 +68,14 @@
 				<div className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ease-out
 					${stickyMode ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
 					<div className="flex justify-between items-center px-6 sm:px-10 md:px-16 py-4 backdrop-blur-lg bg-slate-900/90 border-b border-white/10">
-						<h1 className="text-xl md:text-3xl text-gray-300 font-semibold pointer-events-auto">
-							Ow Xun Jiun
-						</h1>
+						<div className="flex flex-col items-start gap-1">
+							<h1 className="text-xl md:text-3xl text-gray-300 font-semibold pointer-events-auto">
+								Ow Xun Jiun
+							</h1>
+							<h2 className="text-xs md:text-sm text-gray-300 font-semibold ml-4 pointer-events-auto">
+								IoT Developer
+							</h2>
+						</div>
 						<div className="w-14 h-14 md:w-16 md:h-16 flex-shrink-0">
 							<img 
 								className="block w-full h-full rounded-full object-cover" 
@@ -67,7 +90,7 @@
 					</div>
 				</div>
 				
-				<main className="text-white relative z-10">
+				<main id="homepage-main" className="text-white relative z-10">
 					{/* Hero Section */}
 					<section className="min-h-screen flex flex-col px-2 sm:px-4 md:px-6 py-2 md:py-4 pt-2 md:pt-4 lg:pt-6 xl:pt-8 pointer-events-none relative">
 						<div className="flex-1">
@@ -143,13 +166,26 @@
 
 					{/* Skills Section */}
 					<Suspense fallback={<div className="min-h-screen" />}>
-						<Skills onVisibilityChange={setStickyMode} />
+						<Skills onVisibilityChange={handleSectionVisibility("skills")} />
 					</Suspense>
 
 					<Suspense fallback={<div className="min-h-screen" />}>
-						<Projects />
+						<Experience onVisibilityChange={handleSectionVisibility("experience")} />
 					</Suspense>
+
+					<Suspense fallback={<div className="min-h-screen" />}>
+						<Projects onVisibilityChange={handleSectionVisibility("projects")} />
+					</Suspense>
+					
+					<div className="flex flex-col items-center justify-center">				
+						<button onClick={scrollToMain} className="border-t border-white/10 mt-2 p-1 text-gray-400 hover:text-white transition-colors duration-300"> Back to Top</button>
+					</div>
 				</main>
-			</>
+			<footer className="relative z-10 bg-slate-900/90 backdrop-blur-lg border-t border-white/10 py-4 px-4">
+  				<div className="max-w-2xl mx-auto text-center text-gray-400">
+    				<p>© 2026 Designed and Developed by Ow Xun Jiun. Made with ReactJS and Tailwind CSS.</p>
+  				</div>
+			</footer>
+		</>	
 		);
 	}
