@@ -1,191 +1,218 @@
-	import React, {lazy, Suspense, useState, useEffect, useRef, useCallback} from "react";
-	import "./index.css";
-	import halfBodyPic from "./assets/half-body-photo.webp";
-	import 'animate.css';
-	
+import React, { lazy, Suspense, useState, useEffect, useCallback } from "react";
+import "./index.css";
+import halfBodyPic from "./assets/half-body-photo.webp";
+import "animate.css";
 
-	const GitHubLink = lazy(() => import("./GitHubLink.jsx"));
-	const LinkedInLink = lazy(() => import("./LinkedInLink.jsx"));
-	const EmailLink = lazy(() => import("./EmailLink.jsx"));
-	const ContactLink = lazy(() => import("./ContactLink.jsx"));
-	const BackgroundBoxesCanvas = lazy(() => import("./components/ui/boxes.jsx")); 
-	const FadeContent = lazy(() => import("./components/FadeContent"));
-	const Magnet = lazy(() => import("./components/Magnet"));
-	const TextAnimate = lazy(() =>
-	import("./components/ui/text-animate").then((module) => ({
-		default: module.TextAnimate,
-	}))
-	);
-	const Skills = lazy(() => import("./Skills.jsx"));
-	const Projects = lazy(() => import("./Projects.jsx"));
-	const Experience = lazy(() => import("./Experience.jsx"));
+const GitHubLink = lazy(() => import("./GitHubLink.jsx"));
+const LinkedInLink = lazy(() => import("./LinkedInLink.jsx"));
+const EmailLink = lazy(() => import("./EmailLink.jsx"));
+const ContactLink = lazy(() => import("./ContactLink.jsx"));
+const BackgroundBoxesCanvas = lazy(() => import("./components/ui/boxes.jsx"));
+const FadeContent = lazy(() => import("./components/FadeContent"));
+const Magnet = lazy(() => import("./components/Magnet"));
+const TextAnimate = lazy(() =>
+  import("./components/ui/text-animate").then((m) => ({ default: m.TextAnimate }))
+);
 
-	export default function Homepage() {
-		const [showLine, setShowLine] = useState(false);
-		const [showIcons, setShowIcons] = useState(false);
-		const [sectionVisibility, setSectionVisibility] = useState({
-			skills: false,
-			projects: false,
-			experience: false
-		});
-		const stickyMode = sectionVisibility.skills || sectionVisibility.projects || sectionVisibility.experience;
-		const handleSectionVisibility = useCallback((sectionName) => (isVisible) => {
-			setSectionVisibility(prev => ({ ...prev, [sectionName]: isVisible }));
-		}, []);
-		
-		const scrollToMain = () => {
-			const el = document.querySelector("#homepage-main");
-				if (!el) {
-				  console.warn('No element found with id="homepage-main"');
-				return;
-			  }
-			  el.scrollIntoView({ behavior: "smooth", block: "start" });
-			  };
-			
-		useEffect(() => {
-			const timer = setTimeout(() => {
-				setShowLine(true);
-			}, 300); 
-			return () => clearTimeout(timer);
-		}, []);
+const Skills = lazy(() => import("./Skills.jsx"));
+const Projects = lazy(() => import("./Projects.jsx"));
+const Experience = lazy(() => import("./Experience.jsx"));
 
-		useEffect(() => {
-			const t = setTimeout(() => setShowIcons(true), 1000); 
-			return () => clearTimeout(t);
-		}, []);
+export default function Homepage() {
+  const [showLine, setShowLine] = useState(false);
+  const [showIcons, setShowIcons] = useState(false);
+  const [sectionVisibility, setSectionVisibility] = useState({
+    skills: false,
+    projects: false,
+    experience: false,
+  });
 
+  const stickyMode =
+    sectionVisibility.skills || sectionVisibility.projects || sectionVisibility.experience;
 
+  const handleSectionVisibility = useCallback(
+    (sectionName) => (isVisible) => {
+      setSectionVisibility((prev) => ({ ...prev, [sectionName]: isVisible }));
+    },
+    []
+  );
 
+  const scrollToMain = () => {
+    const el = document.querySelector("#homepage-main");
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
-		return (
-			<>
-				{/* Background with lazy loading */}
-				<Suspense fallback={<div className="fixed inset-0 bg-slate-900 z-0" />}>
-					<BackgroundBoxesCanvas />
-				</Suspense>
+  useEffect(() => {
+    const timer = setTimeout(() => setShowLine(true), 300);
+    return () => clearTimeout(timer);
+  }, []);
 
-				{/* Sticky Mini Header */}
-				<div className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ease-out
-					${stickyMode ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
-					<div className="flex justify-between items-center px-6 sm:px-10 md:px-16 py-4 backdrop-blur-lg bg-slate-900/90 border-b border-white/10">
-						<div className="flex flex-col items-start gap-1">
-							<h1 className="text-xl md:text-3xl text-gray-300 font-semibold pointer-events-auto">
-								Ow Xun Jiun
-							</h1>
-							<h2 className="text-xs md:text-sm text-gray-300 font-semibold ml-4 pointer-events-auto">
-								IoT Developer
-							</h2>
-						</div>
-						<div className="w-14 h-14 md:w-16 md:h-16 flex-shrink-0">
-							<img 
-								className="block w-full h-full rounded-full object-cover" 
-								src={halfBodyPic}
-								alt="Profile Picture"
-								style={{
-									maskImage: 'radial-gradient(circle at center, black 55%, transparent 60%)', 
-									WebkitMaskImage: 'radial-gradient(circle at center, black 55%, transparent 60%)'
-								}}
-							/>
-						</div>
-					</div>
-				</div>
-				
-				<main id="homepage-main" className="text-white relative z-10">
-					{/* Hero Section */}
-					<section className="min-h-screen flex flex-col px-2 sm:px-4 md:px-6 py-2 md:py-4 pt-2 md:pt-4 lg:pt-6 xl:pt-8 pointer-events-none relative">
-						<div className="flex-1">
-							<div className="gap-4 mb-8">
-								<Suspense fallback={<div className="h-20 w-full animate-pulse bg-white/5 rounded" />}>
-									<FadeContent blur={true} duration={2500} easing="ease-out" initialOpacity={0}>
-										<h1 className="text-gray-400 text-2xl sm:text-2xl md:text-4xl lg:text-6xl 
-										xl:text-9xl antialiased text-shadow-lg/70 text-shadow-black-600 leading-tight text-left">
-											Ow Xun Jiun
-										</h1>
-									</FadeContent>
-								</Suspense>
-							
-								<div className="ml-16 w-full max-w-[580px] my-4" id="line">
-									<div className={`line ${showLine ? "show" : ""}`}/>
-								</div>
-							
-								<div className="flex flex-wrap items-center gap-16 my-6 md:my-12 ml-20 ">
-									<h2 className="animate__animated animate__fadeInUp animate__slow text-gray-400 text-lg
-									sm:text-xl md:text-2xl lg:text-4xl antialiased text-shadow-lg/70 text-shadow-black-600 font-bold">
-										IoT Developer
-									</h2>
-								
-									<Suspense fallback={<div className="flex gap-4 w-40 h-12 animate-pulse bg-white/5 rounded" />}>
-										<div className={`pointer-events-auto 
-											${showIcons ? "animate__animated animate__lightSpeedInRight animate__slow" : "opacity-0"}`}>
-											<Magnet padding={15} disabled={false} magnetStrength={15}>
-												<div className="flex gap-6 md:gap-8">
-													<GitHubLink username="olsenow" />
-													<LinkedInLink username="ow-xun-jiun-92022124a" />
-													<EmailLink email="olsen4263@outlook.com" />
-													<ContactLink contact="+6011-33364263" />
-												</div>
-											</Magnet>
-										</div>
-									</Suspense>
-								</div>
-							</div>
+  useEffect(() => {
+    const t = setTimeout(() => setShowIcons(true), 1000);
+    return () => clearTimeout(t);
+  }, []);
 
-							<div className="flex flex-col max-w-[500px] mb-8 mt-16 ml-24">
-								<Suspense fallback={<div className="h-32 animate-pulse bg-white/5 rounded" />}>
-									<TextAnimate
-										by="word"
-										animation="blurInUp"
-										delay={2}
-										once={true}
-										startOnView={true}
-										className="text-gray-400 text-xl sm:text-lg md:text-xl lg:text-2xl 
-										italic text-justify text-shadow-lg/70 text-shadow-600 leading-relaxed"
-									>
-										I'm an IoT fresh graduate who builds embedded systems with sensors and 
-										microcontrollers with a solid understanding of basic software concept and web development knowledge.
-									</TextAnimate>
-								</Suspense>
-							</div>
-						</div>
+  return (
+    <>
+      {/* Background */}
+      <Suspense fallback={<div className="fixed inset-0 bg-slate-900 z-0" />}>
+        <BackgroundBoxesCanvas />
+      </Suspense>
 
-						<div className="absolute bottom-35 right-35 w-full max-w-[280px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[420px] xl:max-w-[480px]
-						animate__animated animate__backInRight animate__slow animate__delay-1s">
-							<img 
-								className="block w-full h-auto rounded-full" 
-								src={halfBodyPic}
-								alt="Profile Picture"
-								loading="lazy"
-								style={{
-									background: "rgba(15,23,42,0.55)",
-									maskImage: 'radial-gradient(circle at center, black 55%, transparent 60%)', 
-									WebkitMaskImage: 'radial-gradient(circle at center, black 55%, transparent 60%)'
-								}}
-							/>
-						</div>
-					</section>
+      {/* Sticky Mini Header */}
+      <div
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out
+        ${stickyMode ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"}`}
+      >
+        <div className="flex items-center justify-between px-4 sm:px-6 md:px-10 py-3 md:py-4 backdrop-blur-lg bg-slate-900/90 border-b border-white/10">
+          <div className="flex flex-col items-start gap-0.5">
+            <h1 className="text-base sm:text-lg md:text-2xl text-gray-200 font-semibold pointer-events-auto">
+              Ow Xun Jiun
+            </h1>
+            <h2 className="text-[11px] sm:text-xs md:text-sm text-gray-400 font-semibold pointer-events-auto">
+              IoT Developer
+            </h2>
+          </div>
 
-					{/* Skills Section */}
-					<Suspense fallback={<div className="min-h-screen" />}>
-						<Skills onVisibilityChange={handleSectionVisibility("skills")} />
-					</Suspense>
+          <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 flex-shrink-0">
+            <img
+              className="block w-full h-full rounded-full object-cover"
+              src={halfBodyPic}
+              alt="Profile Picture"
+              style={{
+                maskImage: "radial-gradient(circle at center, black 55%, transparent 60%)",
+                WebkitMaskImage:
+                  "radial-gradient(circle at center, black 55%, transparent 60%)",
+              }}
+            />
+          </div>
+        </div>
+      </div>
 
-					<Suspense fallback={<div className="min-h-screen" />}>
-						<Experience onVisibilityChange={handleSectionVisibility("experience")} />
-					</Suspense>
+      {/* Add top padding only when sticky header is visible, so content doesn't hide behind it */}
+      <main
+        id="homepage-main"
+        className={`text-white relative z-10 transition-[padding] duration-300 ${
+          stickyMode ? "pt-16 sm:pt-20" : "pt-0"
+        }`}
+      >
+        {/* HERO */}
+        <section className="min-h-screen relative">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-10 pt-6 md:pt-10 pb-10">
+            {/* Stack on mobile, split on lg */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+              {/* LEFT (Text) */}
+              <div className="pointer-events-none">
+                <Suspense fallback={<div className="h-16 sm:h-20 w-full bg-white/5 rounded animate-pulse" />}>
+                  <FadeContent blur duration={2500} easing="ease-out" initialOpacity={0}>
+                    <h1 className="text-gray-300 text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl leading-tight text-left">
+                      Ow Xun Jiun
+                    </h1>
+                  </FadeContent>
+                </Suspense>
 
-					<Suspense fallback={<div className="min-h-screen" />}>
-						<Projects onVisibilityChange={handleSectionVisibility("projects")} />
-					</Suspense>
-					
-					<div className="flex flex-col items-center justify-center">				
-						<button onClick={scrollToMain} className="border-t border-white/10 mt-2 p-1 text-gray-400 hover:text-white transition-colors duration-300"> Back to Top</button>
-					</div>
-				</main>
-			<footer className="relative z-10 bg-slate-900/90 backdrop-blur-lg border-t border-white/10 py-4 px-4">
-  				<div className="max-w-2xl mx-auto text-center text-gray-400">
-    				<p>© 2026 Designed and Developed by Ow Xun Jiun. Made with ReactJS and Tailwind CSS.</p>
-  				</div>
-			</footer>
-		</>	
-		);
-	}
+                {/* Line */}
+                <div className="mt-5 w-full max-w-[520px]">
+                  <div className={`line ${showLine ? "show" : ""}`} />
+                </div>
+
+                {/* Title + icons */}
+                <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-8">
+                  <h2 className="animate__animated animate__fadeInUp animate__slow text-gray-300 text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold">
+                    IoT Developer
+                  </h2>
+
+                  <Suspense fallback={<div className="h-10 w-44 bg-white/5 rounded animate-pulse" />}>
+                    <div
+                      className={`pointer-events-auto ${
+                        showIcons
+                          ? "animate__animated animate__lightSpeedInRight animate__slow"
+                          : "opacity-0"
+                      }`}
+                    >
+                      <Magnet padding={15} disabled={false} magnetStrength={15}>
+                        <div className="flex gap-5 sm:gap-6">
+                          <GitHubLink username="olsenow" />
+                          <LinkedInLink username="ow-xun-jiun-92022124a" />
+                          <EmailLink email="olsen4263@outlook.com" />
+                          <ContactLink contact="+6011-33364263" />
+                        </div>
+                      </Magnet>
+                    </div>
+                  </Suspense>
+                </div>
+
+                {/* Description */}
+                <div className="mt-8 max-w-xl">
+                  <Suspense fallback={<div className="h-28 w-full bg-white/5 rounded animate-pulse" />}>
+                    <TextAnimate
+                      by="word"
+                      animation="blurInUp"
+                      delay={1.2} // smaller delay feels better on mobile
+                      once
+                      startOnView
+                      className="text-gray-300/90 text-base sm:text-lg md:text-xl italic leading-relaxed"
+                    >
+                      I'm an IoT fresh graduate who builds embedded systems with sensors and microcontrollers with a solid
+                      understanding of basic software concept and web development knowledge.
+                    </TextAnimate>
+                  </Suspense>
+                </div>
+              </div>
+
+              {/* RIGHT (Photo) */}
+              {/* On mobile/tablet: keep in normal flow (no absolute overlap).
+                  On lg+: allow it to sit nicely and bigger. */}
+              <div className="pointer-events-none flex justify-center lg:justify-end">
+                <div className="w-[220px] sm:w-[280px] md:w-[330px] lg:w-[420px] xl:w-[480px]">
+                  <img
+                    className="block w-full h-auto rounded-full animate__animated animate__backInRight animate__slow"
+                    src={halfBodyPic}
+                    alt="Profile Picture"
+                    loading="lazy"
+                    style={{
+                      background: "rgba(15,23,42,0.55)",
+                      maskImage: "radial-gradient(circle at center, black 55%, transparent 60%)",
+                      WebkitMaskImage:
+                        "radial-gradient(circle at center, black 55%, transparent 60%)",
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* SECTIONS */}
+        <Suspense fallback={<div className="min-h-screen" />}>
+          <Skills onVisibilityChange={handleSectionVisibility("skills")} />
+        </Suspense>
+
+        <Suspense fallback={<div className="min-h-screen" />}>
+          <Experience onVisibilityChange={handleSectionVisibility("experience")} />
+        </Suspense>
+
+        <Suspense fallback={<div className="min-h-screen" />}>
+          <Projects onVisibilityChange={handleSectionVisibility("projects")} />
+        </Suspense>
+
+        {/* Back to top */}
+        <div className="flex justify-center py-8">
+          <button
+            onClick={scrollToMain}
+            className="pointer-events-auto border border-white/10 rounded-lg px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 transition-colors duration-200"
+          >
+            Back to Top
+          </button>
+        </div>
+      </main>
+
+      <footer className="relative z-10 bg-slate-900/90 backdrop-blur-lg border-t border-white/10 py-4 px-4">
+        <div className="max-w-3xl mx-auto text-center text-gray-400 text-xs sm:text-sm">
+          <p>© 2026 Designed and Developed by Ow Xun Jiun. Made with ReactJS and Tailwind CSS.</p>
+        </div>
+      </footer>
+    </>
+  );
+}
